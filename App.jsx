@@ -10,6 +10,8 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  Font,
+  AppLoading,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -22,7 +24,7 @@ const windowWidth = width;
 
 // Function that fetches the original 151 pokemon with their urls
 function fetchPokemon(setPokemonData) {
-  fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
+  fetch("https://pokeapi.co/api/v2/pokemon?limit=151") // This returns only pokemon name and url, which is passed to fetchMoreData()
     .then((response) => response.json())
     .then(function (allPokemon) {
       const promises = allPokemon.results.map((pokemon) =>
@@ -39,7 +41,7 @@ function fetchMoreData(pokemon) {
     .then((response) => response.json())
     .then(function (pokeData) {
       let id = pokeData.id;
-      let name = pokeData.name;
+      let name = pokeData.name.charAt(0).toUpperCase() + pokeData.name.slice(1);
       let img =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" +
         id +
@@ -64,10 +66,10 @@ function PokemonList({ navigation }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.pokemonView}
-            onPress={() => navigation.navigate("PokemonDetails", item)}
+            onPress={() => navigation.navigate("Pokemon Details", item)}
           >
             <Image source={{ uri: item.img }} style={styles.pokemonImage} />
-            <Text>{item.name}</Text>
+            <Text style={styles.pokemonName}>{item.name}</Text>
           </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
@@ -82,7 +84,7 @@ function PokemonDetails({ route }) {
 
   return (
     <SafeAreaView style={styles.main}>
-      <Image source={{ uri: img }} style={styles.pokemonImage} />
+      <Image source={{ uri: img }} style={styles.pokemonImageDetails} />
       <Text>{name}</Text>
       <Text>ID: {id}</Text>
     </SafeAreaView>
@@ -93,8 +95,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="PokemonList" component={PokemonList} />
-        <Stack.Screen name="PokemonDetails" component={PokemonDetails} />
+        <Stack.Screen name="Pokedex" component={PokemonList} />
+        <Stack.Screen name="Pokemon Details" component={PokemonDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -103,21 +105,32 @@ export default function App() {
 const styles = StyleSheet.create({
   main: {
     flex: 1,
-    backgroundColor: "#FFFAA0",
+    backgroundColor: "#B3001B",
     alignItems: "center",
     justifyContent: "center",
   },
   pokemonView: {
-    width: windowWidth * 0.4,
-    height: windowWidth * 0.4,
-    backgroundColor: "white",
+    width: windowWidth * 0.43,
+    height: windowWidth * 0.43,
     margin: 10,
+    marginTop: 30,
     alignItems: "center",
     justifyContent: "center",
+    fontSize: 30,
+    backgroundColor: "#F5F5DC",
+    borderRadius: 16,
   },
   pokemonImage: {
-    width: windowWidth * 0.3,
-    height: windowWidth * 0.3,
+    width: windowWidth * 0.35,
+    height: windowWidth * 0.35,
     resizeMode: "contain",
+  },
+  pokemonImageDetails: {
+    width: windowWidth * 0.7,
+    height: windowWidth * 0.7,
+    resizeMode: "contain",
+  },
+  pokemonName: {
+    fontSize: 20,
   },
 });
