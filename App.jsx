@@ -8,7 +8,13 @@ import {
   View,
   Dimensions,
   FlatList,
+  Image,
+  TouchableOpacity,
 } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+
+const Stack = createStackNavigator();
 
 // Get screen width
 const { width } = Dimensions.get("window");
@@ -26,16 +32,24 @@ function fetchPokemon(setPokemonData) {
     });
 }
 
+// Helper function that takes the url gotten to fetch all needed information
 function fetchMoreData(pokemon) {
   let url = pokemon.url;
   return fetch(url)
     .then((response) => response.json())
     .then(function (pokeData) {
-      return pokeData.name;
+      let id = pokeData.id;
+      let name = pokeData.name;
+      let img =
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" +
+        id +
+        ".png";
+      console.log({ id, name, img });
+      return { id, name, img };
     });
 }
 
-export default function App() {
+function PokemonList({ navigation }) {
   const [pokemonData, setPokemonData] = useState([]);
 
   useEffect(() => {
@@ -48,14 +62,41 @@ export default function App() {
       <FlatList
         data={pokemonData}
         renderItem={({ item }) => (
-          <View style={styles.pokemonView}>
-            <Text>{item}</Text>
-          </View>
+          <TouchableOpacity
+            style={styles.pokemonView}
+            onPress={() => navigation.navigate("PokemonDetails", item)}
+          >
+            <Image source={{ uri: item.img }} style={styles.pokemonImage} />
+            <Text>{item.name}</Text>
+          </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
       />
     </SafeAreaView>
+  );
+}
+
+function PokemonDetails({ route }) {
+  const { id, name, img } = route.params;
+
+  return (
+    <SafeAreaView style={styles.main}>
+      <Image source={{ uri: img }} style={styles.pokemonImage} />
+      <Text>{name}</Text>
+      <Text>ID: {id}</Text>
+    </SafeAreaView>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="PokemonList" component={PokemonList} />
+        <Stack.Screen name="PokemonDetails" component={PokemonDetails} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -73,5 +114,10 @@ const styles = StyleSheet.create({
     margin: 10,
     alignItems: "center",
     justifyContent: "center",
+  },
+  pokemonImage: {
+    width: windowWidth * 0.3,
+    height: windowWidth * 0.3,
+    resizeMode: "contain",
   },
 });
