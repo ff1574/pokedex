@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   TextInput,
   Platform,
+  ScrollView,
 } from "react-native";
 import { NavigationContainer, useRoute } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -145,37 +146,39 @@ function PokemonDetails({ route }) {
 function Info() {
   return (
     <SafeAreaView style={styles.mainInfo}>
-      <View
-        style={{
-          alignItems: "center",
-          marginBottom: 14,
-        }}
-      >
-        <Image
-          source={require("./assets/pokemon-title.png")}
-          style={styles.infoImage}
-        />
-      </View>
-      <View style={styles.infoView}>
-        <Text style={styles.infoText}>Author: Franko Fister</Text>
-        <Text style={styles.infoText}>
-          Task: React Native app that connects to RestAPI
-        </Text>
-        <Text style={styles.infoText}>Company: b2match</Text>
-        <Text style={styles.infoText}>API: PokeAPI</Text>
-      </View>
-      <View style={styles.infoView}>
-        <Text style={styles.infoText}>How to use the app:</Text>
-        <Text style={styles.infoText}>
-          {`\u2022`} Search for the pokemon you would like to view
-        </Text>
-        <Text style={styles.infoText}>
-          {`\u2022`} Click on the pokemon to display data about it
-        </Text>
-        <Text style={styles.infoText}>
-          {`\u2022`} Have fun exploring interesting pokemon!
-        </Text>
-      </View>
+      <ScrollView>
+        <View
+          style={{
+            alignItems: "center",
+            marginBottom: 14,
+          }}
+        >
+          <Image
+            source={require("./assets/pokemon-title.png")}
+            style={styles.infoImage}
+          />
+        </View>
+        <View style={styles.infoView}>
+          <Text style={styles.infoText}>Author: Franko Fister</Text>
+          <Text style={styles.infoText}>
+            Task: React Native app that connects to RestAPI
+          </Text>
+          <Text style={styles.infoText}>Company: b2match</Text>
+          <Text style={styles.infoText}>API: PokeAPI</Text>
+        </View>
+        <View style={styles.infoView}>
+          <Text style={styles.infoText}>How to use the app:</Text>
+          <Text style={styles.infoText}>
+            {`\u2022`} Search for the pokemon you would like to view
+          </Text>
+          <Text style={styles.infoText}>
+            {`\u2022`} Click on the pokemon to display data about it
+          </Text>
+          <Text style={styles.infoText}>
+            {`\u2022`} Have fun exploring interesting pokemon!
+          </Text>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -234,6 +237,7 @@ const styles = StyleSheet.create({
   },
   mainInfo: {
     flex: 1,
+    alignItems: "center",
     backgroundColor: "#B3001B",
     padding: 15,
     borderTopColor: "black",
@@ -315,7 +319,8 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderWidth: 3,
     marginBottom: 20,
-    padding: 5,
+    padding: 10,
+    width: windowWidth * 0.9,
   },
   searchBar: {
     marginVertical: 30,
