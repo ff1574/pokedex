@@ -10,13 +10,19 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  Font,
-  AppLoading,
+  TextInput,
 } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useRoute } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as Font from "expo-font";
+import AppLoading from "expo";
 
+// Create Stack and Tab navigators
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+// Load font
 
 // Get screen width
 const { width } = Dimensions.get("window");
@@ -24,7 +30,7 @@ const windowWidth = width;
 
 // Function that fetches the original 151 pokemon with their urls
 function fetchPokemon(setPokemonData) {
-  fetch("https://pokeapi.co/api/v2/pokemon?limit=151") // This returns only pokemon name and url, which is passed to fetchMoreData()
+  fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
     .then((response) => response.json())
     .then(function (allPokemon) {
       const promises = allPokemon.results.map((pokemon) =>
@@ -46,23 +52,39 @@ function fetchMoreData(pokemon) {
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" +
         id +
         ".png";
-      console.log({ id, name, img });
-      return { id, name, img };
+      let types = pokeData.types.map((typeInfo) => typeInfo.type.name);
+      let height = pokeData.height * 10;
+      let weight = pokeData.weight / 10;
+      return { id, name, img, types, height, weight };
     });
 }
 
+// Main page of the application, shows a table of all pokemon and a search bar
 function PokemonList({ navigation }) {
   const [pokemonData, setPokemonData] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     fetchPokemon(setPokemonData);
   }, []);
 
+  // Getting the table to show data that was input into search bar
+  const filteredPokemonData = pokemonData.filter((pokemon) =>
+    pokemon.name.toLowerCase().includes(searchText.toLowerCase())
+  );
+
   return (
     <SafeAreaView style={styles.main}>
       <StatusBar style="auto" />
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search Pokemon..."
+        value={searchText}
+        onChangeText={(text) => setSearchText(text)}
+      />
+
       <FlatList
-        data={pokemonData}
+        data={filteredPokemonData}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.pokemonView}
@@ -79,35 +101,118 @@ function PokemonList({ navigation }) {
   );
 }
 
+// When clicked on pokemon, this page shows with more details
 function PokemonDetails({ route }) {
-  const { id, name, img } = route.params;
+  const { id, name, img, types, height, weight } = route.params;
 
   return (
-    <SafeAreaView style={styles.main}>
+    <SafeAreaView style={styles.mainDetails}>
       <Image source={{ uri: img }} style={styles.pokemonImageDetails} />
-      <Text>{name}</Text>
-      <Text>ID: {id}</Text>
+      <Text style={styles.pokemonNameDetails}>{name}</Text>
+      <View>
+        <Text style={[styles.pokemonTextDetails, { marginTop: 40 }]}>
+          ID: {id}
+        </Text>
+        <Text style={styles.pokemonTextDetails}>Height: {height}cm</Text>
+        <Text style={styles.pokemonTextDetails}>Weight: {weight}kg</Text>
+        <Text style={styles.pokemonTextDetails}>Types:</Text>
+        <FlatList
+          data={types}
+          renderItem={({ item }) => (
+            <Text
+              style={[styles.pokemonTextDetails, { marginLeft: 30 }]}
+            >{`\u2022 ${item}`}</Text>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </View>
     </SafeAreaView>
   );
 }
 
+// Info page with hardcoded information
+function Info() {
+  return (
+    <SafeAreaView style={styles.mainInfo}>
+      <View
+        style={{
+          alignItems: "center",
+          marginBottom: 14,
+        }}
+      >
+        <Image
+          source={require("./assets/pokemon-title.png")}
+          style={styles.infoImage}
+        />
+      </View>
+      <Text style={styles.infoText}>Author: Franko Fister</Text>
+      <Text style={styles.infoText}>
+        Task: React Native app that connects to RestAPI
+      </Text>
+      <Text style={styles.infoText}>Company: b2match</Text>
+      <Text style={styles.infoText}>API: PokeAPI</Text>
+      <Text style={styles.infoText}>How to use the app:</Text>
+      <Text style={styles.infoText}>
+        {`\u2022`} Search for the pokemon you would like to view
+      </Text>
+      <Text style={styles.infoText}>
+        {`\u2022`} Click on the pokemon to display data about it
+      </Text>
+      <Text style={styles.infoText}>
+        {`\u2022`} Have fun exploring interesting pokemon!
+      </Text>
+    </SafeAreaView>
+  );
+}
+
+// Function for bottom tab navigation
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarIconStyle: { display: "none" },
+        tabBarLabelStyle: { fontSize: 20, marginBottom: 14 },
+      }}
+    >
+      <Stack.Screen name="Pokedex" component={PokemonList} />
+      <Stack.Screen name="Info" component={Info} />
+    </Tab.Navigator>
+  );
+}
+
+// Navigation between table and details page, render
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Pokedex" component={PokemonList} />
+        <Stack.Screen
+          name="Main"
+          component={MainTabs}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="Pokemon Details" component={PokemonDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
+// Stylesheet
 const styles = StyleSheet.create({
   main: {
     flex: 1,
     backgroundColor: "#B3001B",
     alignItems: "center",
     justifyContent: "center",
+  },
+  mainDetails: {
+    flex: 1,
+    backgroundColor: "#B3001B",
+    alignItems: "center",
+  },
+  mainInfo: {
+    flex: 1,
+    backgroundColor: "#B3001B",
+    padding: 15,
   },
   pokemonView: {
     width: windowWidth * 0.43,
@@ -117,8 +222,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     fontSize: 30,
-    backgroundColor: "#F5F5DC",
+    backgroundColor: "white",
     borderRadius: 16,
+    borderWidth: 3,
+    borderColor: "black",
   },
   pokemonImage: {
     width: windowWidth * 0.35,
@@ -126,11 +233,49 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   pokemonImageDetails: {
-    width: windowWidth * 0.7,
-    height: windowWidth * 0.7,
+    width: windowWidth * 0.8,
+    height: windowWidth * 0.8,
     resizeMode: "contain",
   },
+  pokemonNameDetails: {
+    fontSize: 40,
+    fontWeight: "bold",
+    backgroundColor: "white",
+    padding: 10,
+    paddingLeft: 25,
+    paddingRight: 25,
+    borderRadius: 22,
+    borderColor: "black",
+    borderWidth: 3,
+  },
+  pokemonTextDetails: {
+    fontSize: 22,
+    color: "white",
+    marginTop: 12,
+    marginRight: 80,
+  },
   pokemonName: {
+    fontSize: 20,
+  },
+  infoText: {
+    fontSize: 20,
+    color: "white",
+    marginVertical: 6,
+  },
+  infoImage: {
+    width: windowWidth * 0.8,
+    height: windowWidth * 0.8 * (9 / 16),
+    resizeMode: "contain",
+  },
+  searchBar: {
+    marginTop: 30,
+    height: 60,
+    width: windowWidth * 0.8,
+    borderColor: "black",
+    borderWidth: 3,
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
     fontSize: 20,
   },
 });
