@@ -11,12 +11,12 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  Platform,
 } from "react-native";
 import { NavigationContainer, useRoute } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import * as Font from "expo-font";
-import AppLoading from "expo";
+import { SvgUri } from "react-native-svg";
 
 // Create Stack and Tab navigators
 const Stack = createStackNavigator();
@@ -101,6 +101,8 @@ function PokemonList({ navigation }) {
   );
 }
 
+// Function that returns an svg icon for the type of pokemon, used in PokemonDetails
+
 // When clicked on pokemon, this page shows with more details
 function PokemonDetails({ route }) {
   const { id, name, img, types, height, weight } = route.params;
@@ -109,19 +111,28 @@ function PokemonDetails({ route }) {
     <SafeAreaView style={styles.mainDetails}>
       <Image source={{ uri: img }} style={styles.pokemonImageDetails} />
       <Text style={styles.pokemonNameDetails}>{name}</Text>
-      <View>
-        <Text style={[styles.pokemonTextDetails, { marginTop: 40 }]}>
-          ID: {id}
-        </Text>
+      <View style={styles.pokemonViewDetails}>
+        <Text style={styles.pokemonTextDetails}>ID: {id}</Text>
         <Text style={styles.pokemonTextDetails}>Height: {height}cm</Text>
         <Text style={styles.pokemonTextDetails}>Weight: {weight}kg</Text>
         <Text style={styles.pokemonTextDetails}>Types:</Text>
         <FlatList
           data={types}
           renderItem={({ item }) => (
-            <Text
-              style={[styles.pokemonTextDetails, { marginLeft: 30 }]}
-            >{`\u2022 ${item}`}</Text>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                marginLeft: 30,
+              }}
+            >
+              <Text style={styles.pokemonTextDetails}>{`\u2022 ${item}`}</Text>
+              <Image
+                source={require("./assets/types/bug.png")}
+                style={styles.typeIcon}
+              />
+            </View>
           )}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -145,22 +156,26 @@ function Info() {
           style={styles.infoImage}
         />
       </View>
-      <Text style={styles.infoText}>Author: Franko Fister</Text>
-      <Text style={styles.infoText}>
-        Task: React Native app that connects to RestAPI
-      </Text>
-      <Text style={styles.infoText}>Company: b2match</Text>
-      <Text style={styles.infoText}>API: PokeAPI</Text>
-      <Text style={styles.infoText}>How to use the app:</Text>
-      <Text style={styles.infoText}>
-        {`\u2022`} Search for the pokemon you would like to view
-      </Text>
-      <Text style={styles.infoText}>
-        {`\u2022`} Click on the pokemon to display data about it
-      </Text>
-      <Text style={styles.infoText}>
-        {`\u2022`} Have fun exploring interesting pokemon!
-      </Text>
+      <View style={styles.infoView}>
+        <Text style={styles.infoText}>Author: Franko Fister</Text>
+        <Text style={styles.infoText}>
+          Task: React Native app that connects to RestAPI
+        </Text>
+        <Text style={styles.infoText}>Company: b2match</Text>
+        <Text style={styles.infoText}>API: PokeAPI</Text>
+      </View>
+      <View style={styles.infoView}>
+        <Text style={styles.infoText}>How to use the app:</Text>
+        <Text style={styles.infoText}>
+          {`\u2022`} Search for the pokemon you would like to view
+        </Text>
+        <Text style={styles.infoText}>
+          {`\u2022`} Click on the pokemon to display data about it
+        </Text>
+        <Text style={styles.infoText}>
+          {`\u2022`} Have fun exploring interesting pokemon!
+        </Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -203,22 +218,34 @@ const styles = StyleSheet.create({
     backgroundColor: "#B3001B",
     alignItems: "center",
     justifyContent: "center",
+    borderTopColor: "black",
+    borderTopWidth: 3,
+    borderBottomColor: "black",
+    borderBottomWidth: 3,
   },
   mainDetails: {
     flex: 1,
     backgroundColor: "#B3001B",
     alignItems: "center",
+    borderTopColor: "black",
+    borderTopWidth: 3,
+    borderBottomColor: "black",
+    borderBottomWidth: 3,
   },
   mainInfo: {
     flex: 1,
     backgroundColor: "#B3001B",
     padding: 15,
+    borderTopColor: "black",
+    borderTopWidth: 3,
+    borderBottomColor: "black",
+    borderBottomWidth: 3,
   },
   pokemonView: {
     width: windowWidth * 0.43,
     height: windowWidth * 0.43,
     margin: 10,
-    marginTop: 30,
+    marginBottom: 30,
     alignItems: "center",
     justifyContent: "center",
     fontSize: 30,
@@ -250,16 +277,31 @@ const styles = StyleSheet.create({
   },
   pokemonTextDetails: {
     fontSize: 22,
-    color: "white",
+    color: "black",
     marginTop: 12,
     marginRight: 80,
+  },
+  pokemonViewDetails: {
+    width: windowWidth * 0.8,
+    backgroundColor: "white",
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: "black",
+    padding: 10,
+    marginTop: 30,
+  },
+  typeIcon: {
+    width: windowWidth * 0.07,
+    height: windowWidth * 0.07,
+    resizeMode: "contain",
+    marginTop: 8,
   },
   pokemonName: {
     fontSize: 20,
   },
   infoText: {
     fontSize: 20,
-    color: "white",
+    color: "black",
     marginVertical: 6,
   },
   infoImage: {
@@ -267,8 +309,16 @@ const styles = StyleSheet.create({
     height: windowWidth * 0.8 * (9 / 16),
     resizeMode: "contain",
   },
+  infoView: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    borderColor: "black",
+    borderWidth: 3,
+    marginBottom: 20,
+    padding: 5,
+  },
   searchBar: {
-    marginTop: 30,
+    marginVertical: 30,
     height: 60,
     width: windowWidth * 0.8,
     borderColor: "black",
