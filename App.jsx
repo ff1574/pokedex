@@ -18,6 +18,24 @@ import { NavigationContainer, useRoute } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SvgUri } from "react-native-svg";
+import BugImage from "./assets/types/bug.png"; // I know this is ugly, should be separated to different file
+import DarkImage from "./assets/types/dark.png";
+import DragonImage from "./assets/types/dragon.png";
+import ElectricImage from "./assets/types/electric.png";
+import FairyImage from "./assets/types/fairy.png";
+import FightingImage from "./assets/types/fighting.png";
+import FireImage from "./assets/types/fire.png";
+import FlyingImage from "./assets/types/flying.png";
+import GhostImage from "./assets/types/ghost.png";
+import GrassImage from "./assets/types/grass.png";
+import GroundImage from "./assets/types/ground.png";
+import IceImage from "./assets/types/ice.png";
+import NormalImage from "./assets/types/normal.png";
+import PoisonImage from "./assets/types/poison.png";
+import PsychicImage from "./assets/types/psychic.png";
+import RockImage from "./assets/types/rock.png";
+import SteelImage from "./assets/types/steel.png";
+import WaterImage from "./assets/types/water.png";
 
 // Create Stack and Tab navigators
 const Stack = createStackNavigator();
@@ -102,25 +120,53 @@ function PokemonList({ navigation }) {
   );
 }
 
-// Function that returns an svg icon for the type of pokemon, used in PokemonDetails
+// Function that returns path of icon for the type of pokemon, used in PokemonDetails
+const typeImages = {
+  bug: BugImage,
+  dark: DarkImage,
+  dragon: DragonImage,
+  electric: ElectricImage,
+  fairy: FairyImage,
+  fighting: FightingImage,
+  fire: FireImage,
+  flying: FlyingImage,
+  ghost: GhostImage,
+  grass: GrassImage,
+  ground: GroundImage,
+  ice: IceImage,
+  normal: NormalImage,
+  poison: PoisonImage,
+  psychic: PsychicImage,
+  rock: RockImage,
+  steel: SteelImage,
+  water: WaterImage,
+};
 
 // When clicked on pokemon, this page shows with more details
 function PokemonDetails({ route }) {
   const { id, name, img, types, height, weight } = route.params;
 
+  const getTypeImage = (type) => {
+    if (typeImages[type]) {
+      return typeImages[type];
+    }
+    // Default image if type is not found in the mapping object
+    return null;
+  };
+
   return (
     <SafeAreaView style={styles.mainDetails}>
-      <Image source={{ uri: img }} style={styles.pokemonImageDetails} />
-      <Text style={styles.pokemonNameDetails}>{name}</Text>
-      <View style={styles.pokemonViewDetails}>
-        <Text style={styles.pokemonTextDetails}>ID: {id}</Text>
-        <Text style={styles.pokemonTextDetails}>Height: {height}cm</Text>
-        <Text style={styles.pokemonTextDetails}>Weight: {weight}kg</Text>
-        <Text style={styles.pokemonTextDetails}>Types:</Text>
-        <FlatList
-          data={types}
-          renderItem={({ item }) => (
+      <ScrollView>
+        <Image source={{ uri: img }} style={styles.pokemonImageDetails} />
+        <Text style={styles.pokemonNameDetails}>{name}</Text>
+        <View style={styles.pokemonViewDetails}>
+          <Text style={styles.pokemonTextDetails}>ID: {id}</Text>
+          <Text style={styles.pokemonTextDetails}>Height: {height}cm</Text>
+          <Text style={styles.pokemonTextDetails}>Weight: {weight}kg</Text>
+          <Text style={styles.pokemonTextDetails}>Types:</Text>
+          {types.map((item, index) => (
             <View
+              key={index}
               style={{
                 flex: 1,
                 flexDirection: "row",
@@ -129,15 +175,11 @@ function PokemonDetails({ route }) {
               }}
             >
               <Text style={styles.pokemonTextDetails}>{`\u2022 ${item}`}</Text>
-              <Image
-                source={require("./assets/types/bug.png")}
-                style={styles.typeIcon}
-              />
+              <Image source={getTypeImage(item)} style={styles.typeIcon} />
             </View>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </View>
+          ))}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -278,6 +320,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     borderColor: "black",
     borderWidth: 3,
+    overflow: "hidden",
   },
   pokemonTextDetails: {
     fontSize: 22,
@@ -293,6 +336,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     padding: 10,
     marginTop: 30,
+    marginBottom: 30,
   },
   typeIcon: {
     width: windowWidth * 0.07,
