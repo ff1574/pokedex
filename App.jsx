@@ -13,6 +13,7 @@ import {
   TextInput,
   Platform,
   ScrollView,
+  Animated,
 } from "react-native";
 import { NavigationContainer, useRoute } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -36,6 +37,8 @@ import PsychicImage from "./assets/types/psychic.png";
 import RockImage from "./assets/types/rock.png";
 import SteelImage from "./assets/types/steel.png";
 import WaterImage from "./assets/types/water.png";
+import * as Font from "expo-font";
+import { useFonts, VT323_400Regular } from "@expo-google-fonts/vt323";
 
 // Create Stack and Tab navigators
 const Stack = createStackNavigator();
@@ -94,16 +97,18 @@ function PokemonList({ navigation }) {
 
   return (
     <SafeAreaView style={styles.main}>
-      <StatusBar style="auto" />
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search Pokemon..."
-        value={searchText}
-        onChangeText={(text) => setSearchText(text)}
-      />
+      <View style={styles.searchBarView}>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search Pokemon..."
+          value={searchText}
+          onChangeText={(text) => setSearchText(text)}
+        />
+      </View>
 
       <FlatList
         data={filteredPokemonData}
+        style={{ paddingTop: 20 }}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.pokemonView}
@@ -242,6 +247,14 @@ function MainTabs() {
 
 // Navigation between table and details page, render
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    VT323_400Regular,
+  });
+
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -258,30 +271,12 @@ export default function App() {
 
 // Stylesheet
 const styles = StyleSheet.create({
+  // Styles for list page
   main: {
     flex: 1,
     backgroundColor: "#B3001B",
     alignItems: "center",
     justifyContent: "center",
-    borderTopColor: "black",
-    borderTopWidth: 3,
-    borderBottomColor: "black",
-    borderBottomWidth: 3,
-  },
-  mainDetails: {
-    flex: 1,
-    backgroundColor: "#B3001B",
-    alignItems: "center",
-    borderTopColor: "black",
-    borderTopWidth: 3,
-    borderBottomColor: "black",
-    borderBottomWidth: 3,
-  },
-  mainInfo: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#B3001B",
-    padding: 15,
     borderTopColor: "black",
     borderTopWidth: 3,
     borderBottomColor: "black",
@@ -300,10 +295,41 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "black",
   },
+  pokemonName: {
+    fontSize: 20,
+  },
   pokemonImage: {
     width: windowWidth * 0.35,
     height: windowWidth * 0.35,
     resizeMode: "contain",
+  },
+  searchBar: {
+    marginVertical: 30,
+    height: 60,
+    width: windowWidth * 0.8,
+    borderColor: "black",
+    borderWidth: 3,
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+    fontSize: 20,
+  },
+  searchBarView: {
+    borderColor: "black",
+    borderBottomWidth: 3,
+    width: windowWidth,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  // Styles for details page
+  mainDetails: {
+    flex: 1,
+    backgroundColor: "#B3001B",
+    alignItems: "center",
+    borderTopColor: "black",
+    borderTopWidth: 3,
+    borderBottomColor: "black",
+    borderBottomWidth: 3,
   },
   pokemonImageDetails: {
     width: windowWidth * 0.8,
@@ -321,12 +347,15 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderWidth: 3,
     overflow: "hidden",
+    textAlign: "center",
   },
   pokemonTextDetails: {
-    fontSize: 22,
+    fontSize: 32,
     color: "black",
-    marginTop: 12,
-    marginRight: 80,
+    marginTop: 1,
+    marginRight: 10,
+    fontFamily: "VT323_400Regular",
+    lineHeight: 40,
   },
   pokemonViewDetails: {
     width: windowWidth * 0.8,
@@ -335,6 +364,8 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "black",
     padding: 10,
+    paddingBottom: 20,
+    paddingLeft: 24,
     marginTop: 30,
     marginBottom: 30,
   },
@@ -342,10 +373,18 @@ const styles = StyleSheet.create({
     width: windowWidth * 0.07,
     height: windowWidth * 0.07,
     resizeMode: "contain",
-    marginTop: 8,
+    marginTop: 10,
   },
-  pokemonName: {
-    fontSize: 20,
+  // Styles for info page
+  mainInfo: {
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: "#B3001B",
+    padding: 15,
+    borderTopColor: "black",
+    borderTopWidth: 3,
+    borderBottomColor: "black",
+    borderBottomWidth: 3,
   },
   infoText: {
     fontSize: 20,
@@ -365,16 +404,5 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     padding: 10,
     width: windowWidth * 0.9,
-  },
-  searchBar: {
-    marginVertical: 30,
-    height: 60,
-    width: windowWidth * 0.8,
-    borderColor: "black",
-    borderWidth: 3,
-    borderRadius: 16,
-    paddingHorizontal: 10,
-    backgroundColor: "white",
-    fontSize: 20,
   },
 });

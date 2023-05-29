@@ -9,6 +9,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/overpass": "^0.2.3",
+    "@expo-google-fonts/vt323": "^0.2.3",
     "@expo/webpack-config": "^18.0.1",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
@@ -21,6 +23,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.71.8",
+    "react-native-reanimated": "~2.14.4",
     "react-native-svg": "13.4.0",
     "react-native-web": "~0.18.10"
   },
