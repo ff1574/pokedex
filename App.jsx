@@ -1,6 +1,7 @@
 // Imports
 import React, { useState, useEffect } from "react";
 import {
+  StatusBar,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -10,8 +11,9 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  Platform,
   ScrollView,
-  Switch,
+  Animated,
 } from "react-native";
 import { NavigationContainer, useRoute } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -88,6 +90,7 @@ function PokemonList({ navigation }) {
     fetchPokemon(setPokemonData);
   }, []);
 
+  // Getting the table to show data that was input into search bar
   const filteredPokemonData = pokemonData.filter((pokemon) =>
     pokemon.name.toLowerCase().includes(searchText.toLowerCase())
   );
@@ -102,6 +105,7 @@ function PokemonList({ navigation }) {
           onChangeText={(text) => setSearchText(text)}
         />
       </View>
+
       <FlatList
         data={filteredPokemonData}
         style={{ paddingTop: 20 }}
@@ -146,16 +150,6 @@ const typeImages = {
 // When clicked on pokemon, this page shows with more details
 function PokemonDetails({ route }) {
   const { id, name, img, types, height, weight } = route.params;
-  const [isMetric, setIsMetric] = useState(false);
-
-  const toggleSwitch = () => setIsMetric((previousState) => !previousState);
-
-  const displayHeight = isMetric
-    ? `${(height * 0.393701).toFixed(2)} in`
-    : `${height} cm`;
-  const displayWeight = isMetric
-    ? `${(weight * 2.20462).toFixed(2)} lbs`
-    : `${weight} kg`;
 
   const getTypeImage = (type) => {
     if (typeImages[type]) {
@@ -172,8 +166,8 @@ function PokemonDetails({ route }) {
         <Text style={styles.pokemonNameDetails}>{name}</Text>
         <View style={styles.pokemonViewDetails}>
           <Text style={styles.pokemonTextDetails}>ID: {id}</Text>
-          <Text style={styles.pokemonTextDetails}>Height: {displayHeight}</Text>
-          <Text style={styles.pokemonTextDetails}>Weight: {displayWeight}</Text>
+          <Text style={styles.pokemonTextDetails}>Height: {height}cm</Text>
+          <Text style={styles.pokemonTextDetails}>Weight: {weight}kg</Text>
           <Text style={styles.pokemonTextDetails}>Types:</Text>
           {types.map((item, index) => (
             <View
@@ -189,27 +183,6 @@ function PokemonDetails({ route }) {
               <Image source={getTypeImage(item)} style={styles.typeIcon} />
             </View>
           ))}
-          <View style={styles.switchContainer}>
-            <Text style={[styles.pokemonTextDetails, { marginBottom: 6 }]}>
-              Metric
-            </Text>
-            <Switch
-              trackColor={{ false: "#3e3e3e", true: "#3e3e3e" }}
-              thumbColor={isMetric ? "#F9665E" : "#81b0ff"}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleSwitch}
-              value={isMetric}
-              style={{ margin: 5 }}
-            />
-            <Text
-              style={[
-                styles.pokemonTextDetails,
-                { marginBottom: 6, marginLeft: 5 },
-              ]}
-            >
-              Imperial
-            </Text>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -401,12 +374,6 @@ const styles = StyleSheet.create({
     height: windowWidth * 0.07,
     resizeMode: "contain",
     marginTop: 10,
-  },
-  switchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 10,
   },
   // Styles for info page
   mainInfo: {
