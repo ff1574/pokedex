@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -15,23 +15,16 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.francmeister.Pokedex"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.francmeister.Pokedex"
+      }
     },
     "web": {
-      "favicon": "./assets/icon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "5e102ca5-ef2b-43a9-8864-551f5be3c32a"
-      }
+      "favicon": "./assets/favicon.png"
     }
   }
 }
