@@ -42,8 +42,6 @@ import { useFonts, VT323_400Regular } from "@expo-google-fonts/vt323";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Load font
-
 // Get screen width
 const { width } = Dimensions.get("window");
 const windowWidth = width;
@@ -60,12 +58,13 @@ function fetchPokemon(setPokemonData) {
     });
 }
 
-// Helper function that takes the url gotten to fetch all needed information
+// Helper function that takes the url gotten to fetch all needed additional information
 function fetchMoreData(pokemon) {
   let url = pokemon.url;
   return fetch(url)
     .then((response) => response.json())
     .then(function (pokeData) {
+      // Getting / Calculating id, name, image, types, height and width
       let id = pokeData.id;
       let name = pokeData.name.charAt(0).toUpperCase() + pokeData.name.slice(1);
       let img =
@@ -88,12 +87,15 @@ function PokemonList({ navigation }) {
     fetchPokemon(setPokemonData);
   }, []);
 
+  // Filtering list data input into the searchbar
   const filteredPokemonData = pokemonData.filter((pokemon) =>
     pokemon.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
+    // Main view
     <SafeAreaView style={styles.main}>
+      {/* Search bar view, placeholder text, connected to the setSearchText state */}
       <View style={styles.searchBarView}>
         <TextInput
           style={styles.searchBar}
@@ -102,6 +104,8 @@ function PokemonList({ navigation }) {
           onChangeText={(text) => setSearchText(text)}
         />
       </View>
+      {/* List of all the original 151 pokemon, for every pokemon fetched, it creates a TouchableOpacity view with the pokemon name and image */}
+      {/* When clicked, it goes to the pokemon details page associated with the ID, which fetches more information */}
       <FlatList
         data={filteredPokemonData}
         style={{ paddingTop: 20 }}
@@ -145,11 +149,14 @@ const typeImages = {
 
 // When clicked on pokemon, this page shows with more details
 function PokemonDetails({ route }) {
+  // Fetches all needed info with the fetchMoreData() function
   const { id, name, img, types, height, weight } = route.params;
-  const [isMetric, setIsMetric] = useState(false);
 
+  // States for switch to switch between imperial and metric units
+  const [isMetric, setIsMetric] = useState(false);
   const toggleSwitch = () => setIsMetric((previousState) => !previousState);
 
+  // Text that switches depending on what units user selected, direct imperial calculation
   const displayHeight = isMetric
     ? `${(height * 0.393701).toFixed(2)} in`
     : `${height} cm`;
@@ -166,8 +173,10 @@ function PokemonDetails({ route }) {
   };
 
   return (
+    // Main view
     <SafeAreaView style={styles.mainDetails}>
       <ScrollView>
+        {/* Shows everything in a list-like fashion */}
         <Image source={{ uri: img }} style={styles.pokemonImageDetails} />
         <Text style={styles.pokemonNameDetails}>{name}</Text>
         <View style={styles.pokemonViewDetails}>
@@ -175,6 +184,9 @@ function PokemonDetails({ route }) {
           <Text style={styles.pokemonTextDetails}>Height: {displayHeight}</Text>
           <Text style={styles.pokemonTextDetails}>Weight: {displayWeight}</Text>
           <Text style={styles.pokemonTextDetails}>Types:</Text>
+          {/* Creates a map which assigns the necessary icon depending on the type of the pokemon */}
+          {/* For every type, it creates a View that gives a bullet with type name and icon */}
+          {/* This is made future proof because in later games, a pokemon can have 3 types */}
           {types.map((item, index) => (
             <View
               key={index}
@@ -189,6 +201,7 @@ function PokemonDetails({ route }) {
               <Image source={getTypeImage(item)} style={styles.typeIcon} />
             </View>
           ))}
+          {/* View for the switch container, some basic switch styling and text to understand what the switch does */}
           <View style={styles.switchContainer}>
             <Text style={[styles.pokemonTextDetails, { marginBottom: 6 }]}>
               Metric
@@ -219,8 +232,10 @@ function PokemonDetails({ route }) {
 // Info page with hardcoded information
 function Info() {
   return (
+    // Main view
     <SafeAreaView style={styles.mainInfo}>
       <ScrollView>
+        {/* View just to display the Pokemon title image */}
         <View
           style={{
             alignItems: "center",
@@ -232,6 +247,7 @@ function Info() {
             style={styles.infoImage}
           />
         </View>
+        {/* Hardcoded information like author, api etc. Short tutorial on how to use app */}
         <View style={styles.infoView}>
           <Text style={styles.infoText}>Author: Franko Fister</Text>
           <Text style={styles.infoText}>
@@ -260,6 +276,7 @@ function Info() {
 // Function for bottom tab navigation
 function MainTabs() {
   return (
+    // This creates the bottom tab, some basic styling and the two tabs to switch between screens
     <Tab.Navigator
       screenOptions={{
         tabBarIconStyle: { display: "none" },
@@ -272,12 +289,13 @@ function MainTabs() {
   );
 }
 
-// Navigation between table and details page, render
+// Navigation between pokemon list and details page
 export default function App() {
+  // Adding custom font for details page
   const [fontsLoaded] = useFonts({
     VT323_400Regular,
   });
-
+  // Force loading if app cannot connect to google fonts
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
@@ -298,7 +316,8 @@ export default function App() {
 
 // Stylesheet
 const styles = StyleSheet.create({
-  // Styles for list page
+  // ***************************Styles for list page***************************
+  // SafeAreaView
   main: {
     flex: 1,
     backgroundColor: "#B3001B",
@@ -309,6 +328,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "black",
     borderBottomWidth: 3,
   },
+  // Pokemon div/view that display each pokemon, with image and name inside
   pokemonView: {
     width: windowWidth * 0.43,
     height: windowWidth * 0.43,
@@ -322,14 +342,17 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "black",
   },
+  // Pokemon name inside PokemonView
   pokemonName: {
     fontSize: 20,
   },
+  // Pokemon image inside PokemonImage
   pokemonImage: {
     width: windowWidth * 0.35,
     height: windowWidth * 0.35,
     resizeMode: "contain",
   },
+  // Search bar styling
   searchBar: {
     marginVertical: 30,
     height: 60,
@@ -341,6 +364,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: 20,
   },
+  // Search bar div/view/parent
   searchBarView: {
     borderColor: "black",
     borderBottomWidth: 3,
@@ -348,7 +372,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // Styles for details page
+  // ***************************Styles for details page***************************
+  // SafeAreaView
   mainDetails: {
     flex: 1,
     backgroundColor: "#B3001B",
@@ -358,11 +383,13 @@ const styles = StyleSheet.create({
     borderBottomColor: "black",
     borderBottomWidth: 3,
   },
+  // Image inside details screen
   pokemonImageDetails: {
     width: windowWidth * 0.8,
     height: windowWidth * 0.8,
     resizeMode: "contain",
   },
+  // Used for header, pokemon name
   pokemonNameDetails: {
     fontSize: 40,
     fontWeight: "bold",
@@ -376,6 +403,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     textAlign: "center",
   },
+  // Used for all additional info that displays inside details, including imperial/metric switch text
   pokemonTextDetails: {
     fontSize: 32,
     color: "black",
@@ -384,6 +412,7 @@ const styles = StyleSheet.create({
     fontFamily: "VT323_400Regular",
     lineHeight: 40,
   },
+  // Div/view that holds all PokemonTextDetails, including switch
   pokemonViewDetails: {
     width: windowWidth * 0.8,
     backgroundColor: "white",
@@ -396,19 +425,22 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 30,
   },
+  // Styling for icons that display next to pokemon type
   typeIcon: {
     width: windowWidth * 0.07,
     height: windowWidth * 0.07,
     resizeMode: "contain",
     marginTop: 10,
   },
+  // Self explanatory, div/view that holds the switch with the text inside
   switchContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 10,
   },
-  // Styles for info page
+  // ***************************Styles for info page***************************
+  // SafeAreaView
   mainInfo: {
     flex: 1,
     alignItems: "center",
@@ -419,16 +451,19 @@ const styles = StyleSheet.create({
     borderBottomColor: "black",
     borderBottomWidth: 3,
   },
+  // All hardcoded text in the screen
   infoText: {
     fontSize: 20,
     color: "black",
     marginVertical: 6,
   },
+  // Styling for pokemon title image
   infoImage: {
     width: windowWidth * 0.8,
     height: windowWidth * 0.8 * (9 / 16),
     resizeMode: "contain",
   },
+  // Styling for container that holds all hardcoded text
   infoView: {
     backgroundColor: "white",
     borderRadius: 16,
