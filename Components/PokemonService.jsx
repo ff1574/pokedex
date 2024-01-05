@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+
 // Function that fetches the original 151 pokemon with their urls
 export function fetchPokemon(setPokemonData) {
   fetch("https://pokeapi.co/api/v2/pokemon?limit=151")

@@ -7,7 +7,7 @@ import {
   View,
   FlatList,
   Image,
-  TouchableOpacity,
+  Pressable,
   TextInput,
 } from "react-native";
 
@@ -43,13 +43,17 @@ export function PokemonList({ navigation }) {
         data={filteredPokemonData}
         style={{ paddingTop: 20 }}
         renderItem={({ item }) => (
-          <TouchableOpacity
+          <Pressable
             style={styles.pokemonView}
             onPress={() => navigation.navigate("Pokemon Details", item)}
           >
-            <Image source={{ uri: item.img }} style={styles.pokemonImage} />
+            <Image
+              source={{ uri: item.img }}
+              style={styles.pokemonImage}
+              resizeMode="contain"
+            />
             <Text style={styles.pokemonName}>{item.name}</Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}

@@ -38,7 +38,6 @@ export const styles = StyleSheet.create({
   pokemonImage: {
     width: windowWidth * 0.35,
     height: windowWidth * 0.35,
-    resizeMode: "contain",
   },
   // Search bar styling
   searchBar: {
@@ -75,7 +74,6 @@ export const styles = StyleSheet.create({
   pokemonImageDetails: {
     width: windowWidth * 0.8,
     height: windowWidth * 0.8,
-    resizeMode: "contain",
   },
   // Used for header, pokemon name
   pokemonNameDetails: {
@@ -117,7 +115,6 @@ export const styles = StyleSheet.create({
   typeIcon: {
     width: windowWidth * 0.07,
     height: windowWidth * 0.07,
-    resizeMode: "contain",
     marginTop: 10,
   },
   // Self explanatory, div/view that holds the switch with the text inside
@@ -149,7 +146,6 @@ export const styles = StyleSheet.create({
   infoImage: {
     width: windowWidth * 0.8,
     height: windowWidth * 0.8 * (9 / 16),
-    resizeMode: "contain",
   },
   // Styling for container that holds all hardcoded text
   infoView: {

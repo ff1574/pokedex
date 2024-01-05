@@ -40,7 +40,11 @@ export function PokemonDetails({ route }) {
     <SafeAreaView style={styles.mainDetails}>
       <ScrollView>
         {/* Shows everything in a list-like fashion */}
-        <Image source={{ uri: img }} style={styles.pokemonImageDetails} />
+        <Image
+          source={{ uri: img }}
+          style={styles.pokemonImageDetails}
+          resizeMode="contain"
+        />
         <Text style={styles.pokemonNameDetails}>{name}</Text>
         <View style={styles.pokemonViewDetails}>
           <Text style={styles.pokemonTextDetails}>ID: {id}</Text>
@@ -61,7 +65,11 @@ export function PokemonDetails({ route }) {
               }}
             >
               <Text style={styles.pokemonTextDetails}>{`\u2022 ${item}`}</Text>
-              <Image source={getTypeImage(item)} style={styles.typeIcon} />
+              <Image
+                source={getTypeImage(item)}
+                style={styles.typeIcon}
+                resizeMode="contain"
+              />
             </View>
           ))}
           {/* View for the switch container, some basic switch styling and text to understand what the switch does */}
