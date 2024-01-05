@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { styles } from "../Assets/CSS/styles.jsx";
-import { fetchPokemon } from "./PokemonService.jsx";
+import PokemonService from "./PokemonService.jsx";
 import {
   SafeAreaView,
   Text,
@@ -15,10 +15,16 @@ import {
 export function PokemonList({ navigation }) {
   const [pokemonData, setPokemonData] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
 
   useEffect(() => {
-    fetchPokemon(setPokemonData);
-  }, []);
+    loadPokemon();
+  }, [offset]);
+
+  const loadPokemon = () => {
+    PokemonService.fetchPokemon(setPokemonData, offset, limit);
+  };
 
   // Filtering list data input into the searchbar
   const filteredPokemonData = pokemonData.filter((pokemon) =>
@@ -57,6 +63,8 @@ export function PokemonList({ navigation }) {
         )}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
+        onEndReached={() => setOffset((prevOffset) => prevOffset + limit)}
+        onEndReachedThreshold={1.5}
       />
     </SafeAreaView>
   );

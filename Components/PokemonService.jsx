@@ -1,19 +1,24 @@
 import React, { useState } from "react";
 
 // Function that fetches the original 151 pokemon with their urls
-export function fetchPokemon(setPokemonData) {
-  fetch("https://pokeapi.co/api/v2/pokemon?limit=151")
+function fetchPokemon(setPokemonData, offset, limit) {
+  fetch(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`)
     .then((response) => response.json())
     .then(function (allPokemon) {
       const promises = allPokemon.results.map((pokemon) =>
         fetchMoreData(pokemon)
       );
-      Promise.all(promises).then((pokemonList) => setPokemonData(pokemonList));
+      Promise.all(promises).then((newPokemonList) =>
+        setPokemonData((oldPokemonList) => [
+          ...oldPokemonList,
+          ...newPokemonList,
+        ])
+      );
     });
 }
 
 // Helper function that takes the url gotten to fetch all needed additional information
-export function fetchMoreData(pokemon) {
+function fetchMoreData(pokemon) {
   let url = pokemon.url;
   return fetch(url)
     .then((response) => response.json())
@@ -31,3 +36,8 @@ export function fetchMoreData(pokemon) {
       return { id, name, img, types, height, weight };
     });
 }
+
+export default {
+  fetchPokemon,
+  fetchMoreData,
+};
