@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { styles } from "../Assets/CSS/styles.jsx";
 import PokemonService from "./PokemonService.jsx";
+import Icon from "react-native-vector-icons/FontAwesome";
 import {
   SafeAreaView,
   Text,
@@ -9,27 +10,29 @@ import {
   Image,
   Pressable,
   TextInput,
+  Button,
 } from "react-native";
 
 // Main page of the application, shows a table of all pokemon and a search bar
 export function PokemonList({ navigation }) {
   const [pokemonData, setPokemonData] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [isSearchActive, setIsSearchActive] = useState(false);
   const [offset, setOffset] = useState(0);
   const limit = 20;
 
   useEffect(() => {
-    loadPokemon();
-  }, [offset]);
+    if (!isSearchActive) {
+      PokemonService.fetchPokemon(setPokemonData, offset, limit);
+    }
+  }, [offset, isSearchActive]);
 
-  const loadPokemon = () => {
+  const handleRefresh = () => {
+    setOffset(0);
+    setPokemonData([]);
+    setIsSearchActive(false);
     PokemonService.fetchPokemon(setPokemonData, offset, limit);
   };
-
-  // Filtering list data input into the searchbar
-  const filteredPokemonData = pokemonData.filter((pokemon) =>
-    pokemon.name.toLowerCase().includes(searchText.toLowerCase())
-  );
 
   return (
     // Main view
@@ -41,12 +44,38 @@ export function PokemonList({ navigation }) {
           placeholder="Search Pokemon..."
           value={searchText}
           onChangeText={(text) => setSearchText(text)}
+          onSubmitEditing={() => {
+            setIsSearchActive(true);
+            PokemonService.fetchSearchResults(
+              searchText,
+              setPokemonData,
+              handleRefresh
+            );
+          }}
         />
+        <Pressable
+          style={styles.searchBarButton}
+          onPress={() => {
+            setIsSearchActive(true);
+            PokemonService.fetchSearchResults(
+              searchText,
+              setPokemonData,
+              handleRefresh
+            );
+          }}
+        >
+          <Icon
+            style={styles.searchBarIcon}
+            name="search"
+            size={20}
+            color="white"
+          />
+        </Pressable>
       </View>
-      {/* List of all the original 151 pokemon, for every pokemon fetched, it creates a TouchableOpacity view with the pokemon name and image */}
+      {/* List of all the pokemon, for every pokemon fetched, it creates a TouchableOpacity view with the pokemon name and image */}
       {/* When clicked, it goes to the pokemon details page associated with the ID, which fetches more information */}
       <FlatList
-        data={filteredPokemonData}
+        data={pokemonData}
         style={{ paddingTop: 20 }}
         renderItem={({ item }) => (
           <Pressable

@@ -39,11 +39,21 @@ export const styles = StyleSheet.create({
     width: windowWidth * 0.35,
     height: windowWidth * 0.35,
   },
+  // Search bar div/view/parent
+  searchBarView: {
+    flexDirection: "row",
+    gap: 15,
+    padding: 15,
+    borderColor: "black",
+    borderBottomWidth: 3,
+    width: windowWidth,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   // Search bar styling
   searchBar: {
-    marginVertical: 30,
     height: 60,
-    width: windowWidth * 0.8,
+    width: windowWidth * 0.8 - 60,
     borderColor: "black",
     borderWidth: 3,
     borderRadius: 16,
@@ -51,13 +61,21 @@ export const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: 20,
   },
-  // Search bar div/view/parent
-  searchBarView: {
-    borderColor: "black",
-    borderBottomWidth: 3,
-    width: windowWidth,
+  // Search bar button styling
+  searchBarButton: {
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "white",
+    padding: 10,
+    borderColor: "black",
+    borderWidth: 3,
+    borderRadius: 16,
+    height: 60,
+    width: 60,
+  },
+  // Search bar icon styling
+  searchBarIcon: {
+    color: "black",
   },
   // ***************************Styles for details page***************************
   // SafeAreaView
