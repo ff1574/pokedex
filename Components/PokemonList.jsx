@@ -10,16 +10,47 @@ import {
   Image,
   Pressable,
   TextInput,
-  Button,
+  Animated,
+  Dimensions,
 } from "react-native";
 
 // Main page of the application, shows a table of all pokemon and a search bar
 export function PokemonList({ navigation }) {
   const [pokemonData, setPokemonData] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [isSearchActive, setIsSearchActive] = useState(false);
   const [offset, setOffset] = useState(0);
   const limit = 20;
+
+  const [searchText, setSearchText] = useState("");
+  const [isSearchActive, setIsSearchActive] = useState(false);
+
+  const screenWidth = Dimensions.get("window").width;
+  const [fadeAnimation] = useState(new Animated.Value(0));
+  const [slideInFromLeft] = useState(new Animated.Value(screenWidth));
+  const [slideInFromRight] = useState(new Animated.Value(-screenWidth));
+
+  useEffect(() => {
+    Animated.timing(fadeAnimation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [pokemonData]);
+
+  useEffect(() => {
+    slideInFromLeft.setValue(screenWidth); // Reset to initial value
+    slideInFromRight.setValue(-screenWidth); // Reset to initial value
+
+    Animated.parallel([
+      Animated.spring(slideInFromLeft, {
+        toValue: 0,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideInFromRight, {
+        toValue: 0,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [pokemonData]);
 
   useEffect(() => {
     if (!isSearchActive) {
@@ -31,7 +62,9 @@ export function PokemonList({ navigation }) {
     setOffset(0);
     setPokemonData([]);
     setIsSearchActive(false);
-    PokemonService.fetchPokemon(setPokemonData, offset, limit);
+    setTimeout(() => {
+      PokemonService.fetchPokemon(setPokemonData, offset, limit);
+    }, 100); // Delay of 100 miliseconds
   };
 
   return (
@@ -50,7 +83,7 @@ export function PokemonList({ navigation }) {
               searchText,
               setPokemonData,
               handleRefresh
-            );
+            ).catch(handleRefresh);
           }}
         />
         <Pressable
@@ -74,27 +107,40 @@ export function PokemonList({ navigation }) {
       </View>
       {/* List of all the pokemon, for every pokemon fetched, it creates a TouchableOpacity view with the pokemon name and image */}
       {/* When clicked, it goes to the pokemon details page associated with the ID, which fetches more information */}
-      <FlatList
-        data={pokemonData}
-        style={{ paddingTop: 20 }}
-        renderItem={({ item }) => (
-          <Pressable
-            style={styles.pokemonView}
-            onPress={() => navigation.navigate("Pokemon Details", item)}
-          >
-            <Image
-              source={{ uri: item.img }}
-              style={styles.pokemonImage}
-              resizeMode="contain"
-            />
-            <Text style={styles.pokemonName}>{item.name}</Text>
-          </Pressable>
-        )}
-        keyExtractor={(item, index) => index.toString()}
-        numColumns={2}
-        onEndReached={() => setOffset((prevOffset) => prevOffset + limit)}
-        onEndReachedThreshold={1.5}
-      />
+      <Animated.View style={{ ...styles.main, opacity: fadeAnimation }}>
+        <FlatList
+          data={pokemonData}
+          style={{ paddingTop: 20 }}
+          initialNumToRender={8}
+          renderItem={({ item, index }) => (
+            <Animated.View
+              style={{
+                ...styles.pokemonView,
+                transform: [
+                  {
+                    translateX:
+                      index % 2 === 0 ? slideInFromRight : slideInFromLeft,
+                  },
+                ],
+              }}
+            >
+              <Pressable
+                onPress={() => navigation.navigate("Pokemon Details", item)}
+              >
+                <Image
+                  source={{ uri: item.img }}
+                  style={styles.pokemonImage}
+                  resizeMode="contain"
+                />
+                <Text style={styles.pokemonName}>{item.name}</Text>
+              </Pressable>
+            </Animated.View>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={2}
+          onEndReached={() => setOffset((prevOffset) => prevOffset + limit)}
+        />
+      </Animated.View>
     </SafeAreaView>
   );
 }

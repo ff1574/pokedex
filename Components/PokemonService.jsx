@@ -21,7 +21,12 @@ async function fetchSearchResults(searchText, setPokemonData, handleRefresh) {
     return;
   }
   return fetch(`https://pokeapi.co/api/v2/pokemon/${searchText}`)
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
     .then(function (pokeData) {
       // Getting / Calculating id, name, image, types, height and width
       let id = pokeData.id;
@@ -46,8 +51,13 @@ async function fetchSearchResults(searchText, setPokemonData, handleRefresh) {
 
       // Set the Pokemon data
       setPokemonData([pokemon]);
-
-      return pokemon;
+    })
+    .catch((error) => {
+      console.error(
+        "There has been a problem with your fetch operation: ",
+        error
+      );
+      handleRefresh();
     });
 }
 
