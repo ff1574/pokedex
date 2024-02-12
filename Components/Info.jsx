@@ -1,5 +1,5 @@
 import React from "react";
-import { styles } from "../Assets/CSS/styles.jsx";
+import { styles } from "../assets/CSS/styles.jsx";
 import { SafeAreaView, Text, View, Image, ScrollView } from "react-native";
 
 // Info page with hardcoded information
@@ -16,7 +16,7 @@ export function Info() {
           }}
         >
           <Image
-            source={require("../Assets/pokemon-title.png")}
+            source={require("../assets/pokemon-title.png")}
             style={styles.infoImage}
           />
         </View>

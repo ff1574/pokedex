@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { styles } from "../Assets/CSS/styles.jsx";
+import { styles } from "../assets/CSS/styles.jsx";
 import PokemonService from "./PokemonService.jsx";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {

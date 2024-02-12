@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { styles } from "../Assets/CSS/styles.jsx";
+import { styles } from "../assets/CSS/styles.jsx";
 import { typeImages } from "./TypeImages.jsx";
 import {
   SafeAreaView,
